@@ -33,14 +33,15 @@
 
 // export default App
 
-
 import React, { Suspense, useRef, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PerspectiveCamera, PointerLockControls, useGLTF } from '@react-three/drei'
-import { Leva, useControls } from "leva";
+import { Leva, useControls } from "leva"
 import * as THREE from 'three'
-// import Sofa from '/public/Sofa'
+import './App.css'
+import { EffectComposer, Selection, Outline, N8AO, TiltShift2, ToneMapping } from "@react-three/postprocessing"
 
+// Player component for movement
 function Player({ speed = 100, verticalSpeed = 60 }) {
   const { camera } = useThree()
   const moveForward = useRef(false)
@@ -106,6 +107,8 @@ function Player({ speed = 100, verticalSpeed = 60 }) {
 
   return null
 }
+
+// Model component for the main room
 function Model(props) {
   const { nodes, materials } = useGLTF('/scene.gltf')
   return (
@@ -122,80 +125,95 @@ function Model(props) {
   )
 }
 
-// Updated Sofa component
+// Sofa component with props for position, rotation, and scale
 function Sofa(props) {
-  const { nodes, materials } = useGLTF('/sofa.gltf')
-  return (
-    <group {...props} dispose={null}>
-      <group position={[0.018, -0.001, -0.046]} rotation={[-Math.PI / 2, 0, 0.306]} scale={0.001}>
-        {/* Sofa parts remain unchanged */}
-        <group position={[38.138, 51.676, 6.321]} scale={0.4}>
-          <mesh geometry={nodes.Bottom_piece.geometry} material={materials['Material #26 1']} position={[-281.033, -1.263, 263.752]} />
-          <mesh geometry={nodes.Wood_part.geometry} material={materials['Wood 2']} position={[-281.033, -1.263, 263.752]} />
-          <mesh geometry={nodes.Gold_piece.geometry} material={materials['Material #26']} position={[-281.033, -1.263, 263.752]} />
+    const { nodes, materials } = useGLTF('/sofa.gltf')
+    return (
+      <group {...props} dispose={null}>
+        <group position={[0.018, -0.001, -0.046]} rotation={[-Math.PI / 2, 0, 0.306]} scale={0.001}>
+          {/* Sofa parts remain unchanged */}
+          <group position={[38.138, 51.676, 6.321]} scale={0.4}>
+            <mesh geometry={nodes.Bottom_piece.geometry} material={materials['Material #26 1']} position={[-281.033, -1.263, 263.752]} />
+            <mesh geometry={nodes.Wood_part.geometry} material={materials['Wood 2']} position={[-281.033, -1.263, 263.752]} />
+            <mesh geometry={nodes.Gold_piece.geometry} material={materials['Material #26']} position={[-281.033, -1.263, 263.752]} />
+          </group>
+          <mesh geometry={nodes.Plywood.geometry} material={materials['Wood 3']} position={[-70.065, 51.91, 147.816]} scale={0.4} />
+          <mesh geometry={nodes.Seat.geometry} material={materials['Red velvet']} position={[-9.537, 51.274, 214.349]} scale={0.4} />
+          <mesh geometry={nodes.Pillow.geometry} material={materials['Fabric 2']} position={[62.434, 102.691, 268.471]} scale={0.275} />
         </group>
-        <mesh geometry={nodes.Plywood.geometry} material={materials['Wood 3']} position={[-70.065, 51.91, 147.816]} scale={0.4} />
-        <mesh geometry={nodes.Seat.geometry} material={materials['Red velvet']} position={[-9.537, 51.274, 214.349]} scale={0.4} />
-        <mesh geometry={nodes.Pillow.geometry} material={materials['Fabric 2']} position={[62.434, 102.691, 268.471]} scale={0.275} />
+  
+        {/* Plant adjustments */}
+        <mesh 
+          geometry={nodes.Green_plant_monstera.geometry} 
+          material={materials.Amulet} 
+          position={[0.777, 0.814, 1.18]} // Adjust position: [left/right, up/down, forward/backward]
+          rotation={[-Math.PI / 2, 0, 0]} // Adjust rotation if needed: [x-axis, y-axis, z-axis]
+          scale={0.001} // Adjust overall size: increase for larger, decrease for smaller
+          // To adjust width and height independently, use scale={[width, height, depth]}
+          // For example, scale={[0.002, 0.003, 0.002]} for a taller, narrower plant
+        />
+  
+        {/* Table adjustments */}
+        <mesh 
+          geometry={nodes.Coffee_Table.geometry} 
+          material={materials['Eagle Eye']} 
+          position={[0.072, 0.212, 0.164]} // Adjust position: [left/right, up/down, forward/backward]
+          rotation={[-Math.PI / 2, 0, 0.306]} // Adjust rotation if needed: [x-axis, y-axis, z-axis]
+          scale={0.001} // Adjust overall size: increase for larger, decrease for smaller
+          // To adjust width and height independently, use scale={[width, height, depth]}
+          // For example, scale={[0.0015, 0.001, 0.0015]} for a wider, shorter table
+        />
       </group>
+    )
+  }
 
-      {/* Plant adjustments */}
-      <mesh 
-        geometry={nodes.Green_plant_monstera.geometry} 
-        material={materials.Amulet} 
-        position={[0.777, 0.814, 1.18]} // Adjust position: [left/right, up/down, forward/backward]
-        rotation={[-Math.PI / 2, 0, 0]} // Adjust rotation if needed: [x-axis, y-axis, z-axis]
-        scale={0.001} // Adjust overall size: increase for larger, decrease for smaller
-        // To adjust width and height independently, use scale={[width, height, depth]}
-        // For example, scale={[0.002, 0.003, 0.002]} for a taller, narrower plant
-      />
-
-      {/* Table adjustments */}
-      <mesh 
-        geometry={nodes.Coffee_Table.geometry} 
-        material={materials['Eagle Eye']} 
-        position={[0.072, 0.212, 0.164]} // Adjust position: [left/right, up/down, forward/backward]
-        rotation={[-Math.PI / 2, 0, 0.306]} // Adjust rotation if needed: [x-axis, y-axis, z-axis]
-        scale={0.001} // Adjust overall size: increase for larger, decrease for smaller
-        // To adjust width and height independently, use scale={[width, height, depth]}
-        // For example, scale={[0.0015, 0.001, 0.0015]} for a wider, shorter table
-      />
-    </group>
+// Effects component to add post-processing effects
+function Effects() {
+  const { size } = useThree()
+  return (
+    <EffectComposer stencilBuffer disableNormalPass autoClear={false} multisampling={4}>
+      <N8AO halfRes aoSamples={5} aoRadius={0.4} distanceFalloff={0.75} intensity={1} />
+      <Outline visibleEdgeColor="white" hiddenEdgeColor="white" blur width={size.width * 1.25} edgeStrength={10} />
+      <TiltShift2 samples={5} blur={0.1} />
+      <ToneMapping />
+    </EffectComposer>
   )
 }
 
-// Updated Scene component
+// Scene component where everything is placed together
 function Scene() {
-  const { intensity, wallColor, floorColor } = useControls({
-    intensity: { value: 1, min: 0, max: 1, step: 0.05 },
-    wallColor: "#ffffff",
-    floorColor: "#cccccc"
-  });
+  const { intensity } = useControls({
+    intensity: { value: 1, min: 0, max: 1, step: 0.05 }
+  })
 
   return (
     <>
       <ambientLight intensity={intensity} />
       <pointLight position={[0, 10, 0]} intensity={1} />
-      <Model />
-      {/* CHANGE 2: Adjust the scale, position, and rotation of the Sofa here */}
+      <Model rotation={[0, Math.PI / 2, 0]} position={[0, -1, -0.85]} />
       <Sofa position={[0, 0, 0]} scale={10} rotation={[0, Math.PI, 0]} />
       <Player speed={100} verticalSpeed={60} />
     </>
   )
 }
 
-// App component remains unchanged
+// Main App component
 function App() {
   return (
     <>
       <Leva />
-      <Canvas>
-        <PerspectiveCamera makeDefault fov={70} near={0.1} far={1000} position={[0, 1.6, 0]} />
-        <Suspense fallback={null}>
-          <Scene />
-          <PointerLockControls />
-        </Suspense>
-      </Canvas>
+      <div className="canvas-container">
+        <Canvas>
+          <PerspectiveCamera makeDefault fov={70} near={0.1} far={1000} position={[0, 1.6, 0]} />
+          <Suspense fallback={null}>
+            <Selection>
+              <Scene />
+              <PointerLockControls />
+              <Effects /> {/* Apply the post-processing effects */}
+            </Selection>
+          </Suspense>
+        </Canvas>
+      </div>
     </>
   )
 }
@@ -204,3 +222,63 @@ export default App
 
 useGLTF.preload('/scene.gltf')
 useGLTF.preload('/sofa.gltf')
+
+
+
+
+// function Model(props) {
+//   const { nodes, materials } = useGLTF('/scene.gltf')
+//   return (
+//     <group {...props} dispose={null} scale={0.05}>
+//       <group position={[0, -49.207, 0]} scale={100}>
+//         <mesh geometry={nodes.PinLight_plastic_0.geometry} material={materials.plastic} />
+//         <mesh geometry={nodes.PinLight_emission_0.geometry} material={materials.emission} />
+//       </group>
+//       <group scale={100}>
+//         <mesh geometry={nodes.Room_FLOOR_0.geometry} material={materials.FLOOR} />
+//         <mesh geometry={nodes.Room_WALL_0.geometry} material={materials.WALL} />
+//       </group>
+//     </group>
+//   )
+// }
+
+// function Sofa(props) {
+//   const { nodes, materials } = useGLTF('/sofa.gltf')
+//   return (
+//     <group {...props} dispose={null}>
+//       <group position={[0.018, -0.001, -0.046]} rotation={[-Math.PI / 2, 0, 0.306]} scale={0.001}>
+//         {/* Sofa parts remain unchanged */}
+//         <group position={[38.138, 51.676, 6.321]} scale={0.4}>
+//           <mesh geometry={nodes.Bottom_piece.geometry} material={materials['Material #26 1']} position={[-281.033, -1.263, 263.752]} />
+//           <mesh geometry={nodes.Wood_part.geometry} material={materials['Wood 2']} position={[-281.033, -1.263, 263.752]} />
+//           <mesh geometry={nodes.Gold_piece.geometry} material={materials['Material #26']} position={[-281.033, -1.263, 263.752]} />
+//         </group>
+//         <mesh geometry={nodes.Plywood.geometry} material={materials['Wood 3']} position={[-70.065, 51.91, 147.816]} scale={0.4} />
+//         <mesh geometry={nodes.Seat.geometry} material={materials['Red velvet']} position={[-9.537, 51.274, 214.349]} scale={0.4} />
+//         <mesh geometry={nodes.Pillow.geometry} material={materials['Fabric 2']} position={[62.434, 102.691, 268.471]} scale={0.275} />
+//       </group>
+
+//       {/* Plant adjustments */}
+//       <mesh 
+//         geometry={nodes.Green_plant_monstera.geometry} 
+//         material={materials.Amulet} 
+//         position={[0.777, 0.814, 1.18]} // Adjust position: [left/right, up/down, forward/backward]
+//         rotation={[-Math.PI / 2, 0, 0]} // Adjust rotation if needed: [x-axis, y-axis, z-axis]
+//         scale={0.001} // Adjust overall size: increase for larger, decrease for smaller
+//         // To adjust width and height independently, use scale={[width, height, depth]}
+//         // For example, scale={[0.002, 0.003, 0.002]} for a taller, narrower plant
+//       />
+
+//       {/* Table adjustments */}
+//       <mesh 
+//         geometry={nodes.Coffee_Table.geometry} 
+//         material={materials['Eagle Eye']} 
+//         position={[0.072, 0.212, 0.164]} // Adjust position: [left/right, up/down, forward/backward]
+//         rotation={[-Math.PI / 2, 0, 0.306]} // Adjust rotation if needed: [x-axis, y-axis, z-axis]
+//         scale={0.001} // Adjust overall size: increase for larger, decrease for smaller
+//         // To adjust width and height independently, use scale={[width, height, depth]}
+//         // For example, scale={[0.0015, 0.001, 0.0015]} for a wider, shorter table
+//       />
+//     </group>
+//   )
+// }
